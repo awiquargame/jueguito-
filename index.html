@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neon Avoidance</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div id="game-container">
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+
+        <!-- UI Overlays -->
+        <div id="ui-layer">
+
+            <!-- Main Menu -->
+            <div id="menu-start" class="screen active">
+                <h1 class="title" data-i18n="menu.title">NEON AVOIDANCE</h1>
+                <p class="subtitle" data-i18n="menu.subtitle">Esquiva los obstáculos. Sobrevive al caos.</p>
+                <div class="menu-buttons">
+                    <button id="btn-start" class="btn primary" data-i18n="btn.play">JUGAR</button>
+                    <button id="btn-skins" class="btn secondary" data-i18n="btn.skins">ASPECTOS</button>
+                    <button id="btn-settings" class="btn secondary" data-i18n="btn.settings">AJUSTES</button>
+                </div>
+                <div class="controls-info">
+                    <p data-i18n="menu.controls.move">Usa <span>WASD</span> o <span>FLECHAS</span> para moverte</p>
+                    <p data-i18n="menu.controls.pause"><span>P</span> para Pausar</p>
+                </div>
+            </div>
+
+            <!-- Skins Menu -->
+            <div id="menu-skins" class="screen hidden">
+                <h2 data-i18n="skins.title">SELECCIONAR ASPECTO</h2>
+                <div id="skins-container" class="skins-container-fade">
+                    <div id="skins-list" class="skins-grid">
+                        <!-- Skins injected by JS -->
+                    </div>
+                </div>
+                <div class="pagination-controls">
+                    <button id="btn-prev-page" class="btn secondary small" data-i18n="btn.prev">&lt;</button>
+                    <span id="page-indicator">1 / 2</span>
+                    <button id="btn-next-page" class="btn secondary small" data-i18n="btn.next">&gt;</button>
+                </div>
+                <button id="btn-back-skins" class="btn secondary" data-i18n="btn.back">VOLVER</button>
+            </div>
+
+            <!-- Settings Menu -->
+            <div id="menu-settings" class="screen hidden">
+                <h2 data-i18n="settings.title">AJUSTES</h2>
+                <div class="setting-item">
+                    <label for="volume-slider" data-i18n="settings.music">VOLUMEN MÚSICA</label>
+                    <input type="range" id="volume-slider" min="0" max="100" value="50">
+                    <span id="volume-val">50%</span>
+                </div>
+                <div class="setting-item">
+                    <label for="sfx-slider" data-i18n="settings.sfx">VOLUMEN SFX</label>
+                    <input type="range" id="sfx-slider" min="0" max="100" value="100">
+                    <span id="sfx-val">100%</span>
+                </div>
+                <button id="btn-screen-size" class="btn secondary" data-i18n="settings.size_full">TAMAÑO:
+                    NORMAL</button>
+                <button id="btn-language" class="btn secondary" data-i18n="settings.language">IDIOMA: ESPAÑOL</button>
+                <button id="btn-back-settings" class="btn secondary" data-i18n="btn.back">VOLVER</button>
+            </div>
+
+            <!-- Pause Menu -->
+            <div id="menu-pause" class="screen hidden">
+                <h2 data-i18n="pause.title">PAUSA</h2>
+                <button id="btn-resume" class="btn primary" data-i18n="btn.resume">REANUDAR</button>
+                <button id="btn-quit-pause" class="btn secondary" data-i18n="btn.menu">MENÚ PRINCIPAL</button>
+            </div>
+
+            <!-- Game Over Menu -->
+            <div id="menu-gameover" class="screen hidden">
+                <h2 class="danger" data-i18n="gameover.title">JUEGO TERMINADO</h2>
+                <div class="score-display">
+                    <p><span data-i18n="gameover.score">PUNTOS: </span><span id="final-score">0</span></p>
+                    <p class="high-score"><span data-i18n="gameover.best">MEJOR: </span><span id="best-score">0</span>
+                    </p>
+                </div>
+                <button id="btn-restart" class="btn primary" data-i18n="btn.retry">REINTENTAR</button>
+                <button id="btn-quit-gameover" class="btn secondary" data-i18n="btn.menu">MENÚ PRINCIPAL</button>
+            </div>
+
+            <!-- HUD -->
+            <div id="hud" class="hidden">
+                <div class="hud-item"><span data-i18n="hud.score">PUNTUACIÓN: </span><span id="score-val">0</span></div>
+                <div id="dash-container">
+                    <div id="dash-bar"></div>
+                </div>
+                <div id="powerup-timer" class="hidden"><span data-i18n="hud.slowmo">CÁMARA LENTA: </span><span
+                        id="slow-val">0.0</span>s</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Scripts (loaded in dependency order) -->
+    <script src="src/Collision.js"></script>
+    <!-- Game Scripts (loaded in dependency order) -->
+    <script src="src/LocalizationManager.js"></script>
+    <script src="src/Collision.js"></script>
+    <script src="src/InputHandler.js"></script>
+    <script src="src/ScoreManager.js"></script>
+    <script src="src/DifficultyManager.js"></script>
+    <script src="src/SkinManager.js"></script>
+    <script src="src/Player.js"></script>
+    <script src="src/Obstacle.js"></script>
+    <script src="src/HeavyObstacle.js"></script>
+    <script src="src/ChargerObstacle.js"></script>
+    <script src="src/TrajectoryObstacle.js"></script>
+    <script src="src/ObstacleManager.js"></script>
+    <script src="src/Projectile.js"></script>
+    <script src="src/ExplodingEnemy.js"></script>
+    <script src="src/PowerUp.js"></script>
+    <script src="src/ScorePowerUp.js"></script>
+    <script src="src/ShieldPowerUp.js"></script>
+    <script src="src/SpeedPowerUp.js"></script>
+    <script src="src/PowerUpManager.js"></script>
+    <script src="src/Game.js"></script>
+    <script src="src/main.js"></script>
+</body>
+
+</html>
