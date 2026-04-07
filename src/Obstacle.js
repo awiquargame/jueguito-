@@ -1,6 +1,7 @@
 class Obstacle {
-    constructor(game) {
+    constructor(game, speedScale = 1.0) {
         this.game = game;
+        this.speedScale = speedScale; // Store for valid usage
         this.width = Math.random() * 30 + 20; // Random width 20-50
         this.height = Math.random() * 30 + 20; // Random height 20-50
         this.markedForDeletion = false;
@@ -48,8 +49,8 @@ class Obstacle {
 
         // Apply difficulty multiplier
         const speedMult = this.game.difficultyManager.speedMultiplier;
-        this.vx *= speedMult;
-        this.vy *= speedMult;
+        this.vx *= speedMult * this.speedScale;
+        this.vy *= speedMult * this.speedScale;
     }
 
     update(deltaTime) {
@@ -66,18 +67,19 @@ class Obstacle {
             p.x += p.vx * timeScale;
             p.y += p.vy * timeScale;
             p.life -= deltaTime;
-            p.alpha = p.life / p.maxLife;
+            p.alpha = 1.0; // No fade
         });
         this.particles = this.particles.filter(p => p.life > 0);
 
         // Check if out of bounds to remove
         if (this.x > this.game.width + 100 || this.x < -100 ||
-            this.y > this.game.height + 100 || this.y < -100) {
+            this.y > this.game.height + 100 || this.y < -200) {
             this.markedForDeletion = true;
         }
     }
 
     spawnParticles() {
+        if (!this.game.settings.shouldDrawParticles()) return;
         if (Math.random() < 0.3) { // Limit spawn rate
             this.particles.push({
                 x: this.x + this.width / 2 + (Math.random() * 20 - 10),
@@ -96,14 +98,16 @@ class Obstacle {
         ctx.save();
 
         // Draw Particles
-        this.particles.forEach(p => {
-            ctx.globalAlpha = p.alpha;
-            ctx.fillStyle = p.color;
-            ctx.fillRect(p.x, p.y, p.size, p.size);
-        });
+        if (this.game.settings.shouldDrawParticles()) {
+            this.particles.forEach(p => {
+                ctx.globalAlpha = p.alpha;
+                ctx.fillStyle = p.color;
+                ctx.fillRect(p.x, p.y, p.size, p.size);
+            });
+        }
         ctx.globalAlpha = 1.0;
 
-        ctx.shadowBlur = 10;
+        ctx.shadowBlur = this.game.settings.getShadowBlur(10);
         ctx.shadowColor = this.color;
 
         // Fill (Requested by user)

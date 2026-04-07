@@ -4,8 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neon Avoidance</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Dashing into neo</title>
+    <link rel="stylesheet" href="style.css?v=12">
+    <link rel="stylesheet" href="shop.css?v=2">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700&display=swap" rel="stylesheet">
 </head>
 
@@ -16,97 +17,500 @@
         <!-- UI Overlays -->
         <div id="ui-layer">
 
-            <!-- Main Menu -->
-            <div id="menu-start" class="screen active">
-                <h1 class="title" data-i18n="menu.title">NEON AVOIDANCE</h1>
-                <p class="subtitle" data-i18n="menu.subtitle">Esquiva los obstáculos. Sobrevive al caos.</p>
+            <!-- Device Selection Screen (PC Default) -->
+            <div id="menu-device" class="screen hidden">
+                <h1 class="title">MODO DE JUEGO</h1>
+                <p class="subtitle">Selecciona tu dispositivo</p>
                 <div class="menu-buttons">
-                    <button id="btn-start" class="btn primary" data-i18n="btn.play">JUGAR</button>
-                    <button id="btn-skins" class="btn secondary" data-i18n="btn.skins">ASPECTOS</button>
-                    <button id="btn-settings" class="btn secondary" data-i18n="btn.settings">AJUSTES</button>
-                </div>
-                <div class="controls-info">
-                    <p data-i18n="menu.controls.move">Usa <span>WASD</span> o <span>FLECHAS</span> para moverte</p>
-                    <p data-i18n="menu.controls.pause"><span>P</span> para Pausar</p>
+                    <button id="btn-device-pc" class="btn primary">PC 💻</button>
+                    <button id="btn-device-mobile" class="btn primary">MÓVIL 📱</button>
                 </div>
             </div>
 
-            <!-- Skins Menu -->
-            <div id="menu-skins" class="screen hidden">
-                <h2 data-i18n="skins.title">SELECCIONAR ASPECTO</h2>
-                <div id="skins-container" class="skins-container-fade">
-                    <div id="skins-list" class="skins-grid">
-                        <!-- Skins injected by JS -->
+            <!-- Main Menu (Default Active now) -->
+            <div id="menu-start" class="screen active">
+                <div id="menu-user-status" class="user-status-display"></div>
+                <div id="menu-coins" class="coin-display">💎 <span id="menu-coin-val">0</span></div>
+                <h1 class="title" data-i18n="menu.title">Dashing into neo</h1>
+                <p class="subtitle" data-i18n="menu.subtitle">Esquiva los obstáculos. Sobrevive al caos.</p>
+                <div class="menu-buttons">
+                    <button id="btn-start" class="btn primary" data-i18n="btn.play">JUGAR</button>
+
+                    <button id="btn-upgrades" class="btn secondary" data-i18n="btn.upgrades">MEJORAS</button>
+                    <button id="btn-skins" class="btn secondary" data-i18n="btn.skins">SKINS</button>
+                    <button id="btn-settings" class="btn secondary" data-i18n="btn.settings">AJUSTES</button>
+                </div>
+
+                <!-- Competitive Button Corner -->
+                <button id="btn-competitive" class="btn secondary locked" 
+                    style="position: absolute; top: 20px; right: 20px; width: auto; height: auto; padding: 10px 20px; font-size: 0.9rem; border-color: #ff00ff; color: #ff00ff; display: flex; align-items: center; justify-content: center; gap: 10px; z-index: 20;">
+                    <span>🏆 COMPETITIVO</span>
+                    <span id="competitive-lock-icon">🔒</span>
+                </button>
+
+                <!-- Lock Message (In UI) -->
+                <div id="competitive-lock-message" class="hidden" 
+                    style="position: absolute; top: 80px; right: 20px; background: rgba(255, 0, 255, 0.2); border: 1px solid #ff00ff; color: #fff; padding: 10px; border-radius: 8px; font-size: 0.8rem; z-index: 20; backdrop-filter: blur(5px); animation: fadeIn 0.3s ease;">
+                    DERROTA AL JEFE FINAL PARA DESBLOQUEAR
+                </div>
+
+                <div id="flash-overlay"></div>
+
+
+                <!-- Colosseum Button (Moved out of flow for absolute positioning) -->
+                <button id="btn-colosseum" class="btn primary"
+                    style="position: absolute; bottom: 20px; right: 20px; background: linear-gradient(45deg, #FFD700, #FFA500); border-color: #FFD700; color: #000; text-shadow: none; font-weight: 900;">
+                    <div style="font-size: 2rem;">⚔️</div>
+                    <div style="font-size: 0.8rem; margin-top: 5px;">COLISEO</div>
+                </button>
+
+
+            </div>
+
+
+            <!-- Colosseum Menu -->
+            <div id="menu-colosseum" class="screen hidden">
+                <h1 class="title" style="color: #FFD700; text-shadow: 0 0 20px #FFD700;">COLISEO</h1>
+                <p class="subtitle">¡Enfréntate a los jefes de forma consecutiva! ¿Cuánto podrás aguantar?</p>
+
+                <div class="menu-buttons">
+                    <button id="btn-play-colosseum" class="btn primary"
+                        style="background: linear-gradient(45deg, #FFD700, #FFA500); border-color: #FFD700; color: #000;">JUGAR</button>
+                    <button id="btn-back-colosseum" class="btn secondary">VOLVER</button>
+                </div>
+            </div>
+
+            <!-- Competitive Menu -->
+            <div id="menu-competitive" class="screen hidden">
+                <h1 class="title" style="color: #ff00ff; text-shadow: 0 0 20px #ff00ff;">MODO COMPETITIVO</h1>
+                <p class="subtitle">Sin jefes. Solo tú contra el caos. ¿Qué tan lejos llegarás?</p>
+                
+                <div id="competitive-box-hint">Cada 2000 puntos hay una caja</div>
+
+                <div class="leaderboard-container" style="margin: 20px auto; width: 80%; background: rgba(0,0,0,0.5); border: 1px solid #ff00ff; border-radius: 10px; padding: 20px; backdrop-filter: blur(10px);">
+                    <h3 style="color: #ff00ff; margin-bottom: 15px;">TABLA DE CLASIFICACIÓN GLOBAL</h3>
+                    <table style="width: 100%; border-collapse: collapse; color: #fff;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid #ff00ff;">
+                                <th style="padding: 10px; text-align: left;">POS</th>
+                                <th style="padding: 10px; text-align: left;">JUGADOR</th>
+                                <th style="padding: 10px; text-align: right;">PUNTUACIÓN</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Dynamic content injected via AccountManager -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="menu-buttons">
+                    <button id="btn-play-competitive" class="btn primary"
+                        style="background: linear-gradient(45deg, #ff00ff, #bc13fe); border-color: #ff00ff;">JUGAR</button>
+                    <button id="btn-back-competitive" class="btn secondary">VOLVER</button>
+                </div>
+            </div>
+
+            <!-- Loot Box Overlay -->
+            <div id="box-overlay">
+                <h1 id="box-title">NUEVA RECOMPENSA</h1>
+                
+                <div class="box-container">
+                    <div id="loot-box" class="loot-box shake">
+                        <div class="neon-chest">
+                            <div class="chest-inner"></div>
+                        </div>
+                    </div>
+                    
+                    <div id="box-item-reveal" class="box-item-reveal">
+                        <div id="box-rarity-glow" class="rarity-glow"></div>
+                        <div id="box-item-icon" style="font-size: 80px; position: relative;">💎</div>
+                        <div id="box-item-name">500 MONEDAS</div>
+                        <div id="box-item-rarity">COMÚN</div>
                     </div>
                 </div>
-                <div class="pagination-controls">
-                    <button id="btn-prev-page" class="btn secondary small" data-i18n="btn.prev">&lt;</button>
-                    <span id="page-indicator">1 / 2</span>
-                    <button id="btn-next-page" class="btn secondary small" data-i18n="btn.next">&gt;</button>
+
+                <button id="btn-claim-box">RECLAMAR</button>
+            </div>
+
+
+
+
+
+            <!-- New Shop Menu (Horizontal Layout) -->
+            <div id="menu-shop" class="screen hidden">
+                <div class="shop-header">
+                    <div class="shop-tabs">
+                        <button id="tab-shop-skins" class="btn-tab active">SKINS</button>
+                        <button id="tab-shop-particles" class="btn-tab">PARTÍCULAS</button>
+                    </div>
+                    <div id="shop-coins-display">💎 <span id="shop-coin-val">0</span></div>
                 </div>
-                <button id="btn-back-skins" class="btn secondary" data-i18n="btn.back">VOLVER</button>
+
+                <div class="shop-content">
+                    <!-- List Section (Full Width) -->
+                    <div class="shop-list-container" style="width: 100%; flex: 1;">
+                        <div id="shop-list">
+                            <!-- Items injected via JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <button id="btn-back-shop" class="btn secondary" data-i18n="btn.back">VOLVER</button>
+            </div>
+
+            <!-- Upgrades Menu -->
+            <div id="menu-upgrades" class="screen hidden scroll-container">
+                <h2 data-i18n="upgrades.title">MEJORAS</h2>
+
+                <!-- Pagination Header -->
+                <div class="pagination-header">
+                    <button id="btn-prev-upgrade-page" class="btn-arrow" disabled>&lt;</button>
+                    <span id="upgrade-page-indicator">1 / 2</span>
+                    <button id="btn-next-upgrade-page" class="btn-arrow">&gt;</button>
+                </div>
+
+                <!-- Page 1: Basic Upgrades -->
+                <div id="upgrades-page-0" class="upgrades-page active">
+                    <!-- Basic Upgrades -->
+                    <div id="basic-upgrades" class="upgrades-section">
+                        <!-- Speed Upgrade Card -->
+                        <div class="upgrade-card" id="card-speed">
+                            <div class="upgrade-icon">⚡</div>
+                            <div class="upgrade-info">
+                                <h3 data-i18n="upgrades.speed">VELOCIDAD</h3>
+                                <p id="speed-desc" data-i18n="upgrades.speed_desc">Aumenta tu velocidad base.</p>
+                                <div class="progress-bar">
+                                    <div id="speed-progress-fill" class="progress-fill" style="width: 0%"></div>
+                                </div>
+                                <span id="speed-level-text">NIVEL 1 / 6</span>
+                            </div>
+                            <button id="btn-buy-speed" class="btn primary small">
+                                <span id="speed-cost">250</span> 💰
+                            </button>
+                        </div>
+
+                        <!-- Dash Upgrade Card -->
+                        <div class="upgrade-card" id="card-dash">
+                            <div class="upgrade-icon">💨</div>
+                            <div class="upgrade-info">
+                                <h3 data-i18n="upgrades.dash">RECARGA DASH</h3>
+                                <p id="dash-desc" data-i18n="upgrades.dash_desc">Reduce el tiempo de recarga.</p>
+                                <div class="progress-bar">
+                                    <div id="dash-progress-fill" class="progress-fill" style="width: 0%"></div>
+                                </div>
+                                <span id="dash-level-text">NIVEL 1 / 6</span>
+                            </div>
+                            <button id="btn-buy-dash" class="btn primary small">
+                                <span id="dash-cost">250</span> 💰
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Page 2: Abilities Slots -->
+                <div id="upgrades-page-1" class="upgrades-page hidden">
+                    <div class="abilities-container">
+                        <!-- Speed Slot -->
+                        <div class="ability-slot-wrapper">
+                            <h4 data-i18n="upgrades.slot_speed">MOVIMIENTO</h4>
+                            <div id="slot-speed" class="ability-slot" data-type="speed">
+                                <div class="slot-icon">+</div>
+                                <div class="slot-name" data-i18n="upgrades.empty">VACÍO</div>
+                            </div>
+                        </div>
+                        <!-- Dash Slot -->
+                        <div class="ability-slot-wrapper">
+                            <h4 data-i18n="upgrades.slot_dash">DASH</h4>
+                            <div id="slot-dash" class="ability-slot" data-type="dash">
+                                <div class="slot-icon">+</div>
+                                <div class="slot-name" data-i18n="upgrades.empty">VACÍO</div>
+                            </div>
+                        </div>
+                        <!-- Tools Slot -->
+                        <div class="ability-slot-wrapper">
+                            <h4>HERRAMIENTAS</h4>
+                            <div id="slot-tools" class="ability-slot" data-type="tools">
+                                <div class="slot-icon">🔧</div>
+                                <div class="slot-name">TIENDA</div>
+                            </div>
+                        </div>
+                        <!-- Dash Slot 2 -->
+                        <div class="ability-slot-wrapper">
+                            <h4 data-i18n="upgrades.slot_dash">DASH 2</h4>
+                            <div id="slot-dash2" class="ability-slot" data-type="dash2">
+                                <div class="slot-icon">+</div>
+                                <div class="slot-name" data-i18n="upgrades.empty">VACÍO</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tools Modal -->
+                <div id="tools-modal" class="modal-overlay hidden">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>TIENDA DE HERRAMIENTAS</h3>
+                            <button id="btn-close-tools" class="close-btn">&times;</button>
+                        </div>
+                        <div id="modal-tools-list" class="modal-list">
+                            <!-- Items Injected via JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ability Selection Modal (Global in Menu) -->
+                <div id="ability-modal" class="modal-overlay hidden">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 id="modal-title">SELECCIONAR</h3>
+                            <button id="btn-close-modal" class="close-btn">&times;</button>
+                        </div>
+                        <div id="modal-abilities-list" class="modal-list">
+                            <!-- Items Injected via JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="menu-footer">
+                    <button id="btn-back-upgrades" class="btn secondary" data-i18n="btn.back">VOLVER</button>
+                </div>
             </div>
 
             <!-- Settings Menu -->
             <div id="menu-settings" class="screen hidden">
                 <h2 data-i18n="settings.title">AJUSTES</h2>
-                <div class="setting-item">
-                    <label for="volume-slider" data-i18n="settings.music">VOLUMEN MÚSICA</label>
-                    <input type="range" id="volume-slider" min="0" max="100" value="50">
-                    <span id="volume-val">50%</span>
+
+                <!-- Tabs Navigation -->
+                <div class="settings-tabs">
+                    <button class="tab-btn active" data-tab="game">JUEGO</button>
+                    <button class="tab-btn" data-tab="graphics">GRÁFICOS</button>
+                    <button class="tab-btn" data-tab="audio">AUDIO</button>
                 </div>
-                <div class="setting-item">
-                    <label for="sfx-slider" data-i18n="settings.sfx">VOLUMEN SFX</label>
-                    <input type="range" id="sfx-slider" min="0" max="100" value="100">
-                    <span id="sfx-val">100%</span>
+
+                <!-- Page: Game -->
+                <div id="settings-game" class="settings-page active">
+                    <div class="setting-item">
+                        <button id="btn-language" class="btn secondary" data-i18n="settings.language">IDIOMA:
+                            ESPAÑOL</button>
+                    </div>
+
+                    <div class="setting-item">
+                        <button id="btn-screen-size" class="btn secondary" data-i18n="settings.size_full">TAMAÑO:
+                            NORMAL</button>
+                    </div>
+
+                    <div class="setting-group"
+                        style="margin-top: 20px; border-top: 1px solid rgba(0, 255, 170, 0.3); padding-top: 10px;">
+                        <h3 style="font-size: 1rem; color: #00ffaa; margin-bottom: 10px;">SISTEMA DE CUENTAS</h3>
+                        <div id="account-buttons-container" style="display: flex; flex-direction: column; gap: 10px;">
+                            <button id="btn-login" class="btn primary" style="width: 100%;">INICIAR SESIÓN</button>
+                            <button id="btn-register-menu" class="btn secondary" style="width: 100%;">CREAR CUENTA NUEVA</button>
+                        </div>
+                    </div>
+
+                    <div class="setting-group"
+                        style="margin-top: 20px; border-top: 1px solid rgba(255, 0, 85, 0.3); padding-top: 10px;">
+                        <h3 style="font-size: 1rem; color: #ff0055; margin-bottom: 10px;">ZONA DE PELIGRO</h3>
+                        <button id="btn-reset-data" class="btn secondary" style="color: #ff0055; border-color: #ff0055;"
+                            data-i18n="settings.reset">BORRAR DATOS</button>
+                    </div>
                 </div>
-                <button id="btn-screen-size" class="btn secondary" data-i18n="settings.size_full">TAMAÑO:
-                    NORMAL</button>
-                <button id="btn-language" class="btn secondary" data-i18n="settings.language">IDIOMA: ESPAÑOL</button>
-                <button id="btn-back-settings" class="btn secondary" data-i18n="btn.back">VOLVER</button>
+
+                <!-- Page: Graphics -->
+                <div id="settings-graphics" class="settings-page hidden">
+                    <div class="setting-item">
+                        <label>CALIDAD:</label>
+                        <button id="btn-cycle-quality" class="btn secondary small">ALTA</button>
+                    </div>
+                    <div class="setting-item">
+                        <label>FPS:</label>
+                        <button id="btn-cycle-fps" class="btn secondary small">60</button>
+                    </div>
+                    <div class="setting-item">
+                        <label>NEÓN (GLOW):</label>
+                        <button id="btn-cycle-neon" class="btn secondary small">ON</button>
+                    </div>
+                    <div class="setting-item">
+                        <label>PARTÍCULAS:</label>
+                        <button id="btn-cycle-particles" class="btn secondary small">ON</button>
+                    </div>
+                </div>
+
+                <!-- Page: Audio -->
+                <div id="settings-audio" class="settings-page hidden">
+                    <div class="setting-item">
+                        <label for="volume-slider" data-i18n="settings.music">VOLUMEN MÚSICA</label>
+                        <input type="range" id="volume-slider" min="0" max="100" value="50">
+                        <span id="volume-val">50%</span>
+                    </div>
+                    <div class="setting-item">
+                        <label for="sfx-slider" data-i18n="settings.sfx">VOLUMEN SFX</label>
+                        <input type="range" id="sfx-slider" min="0" max="100" value="15">
+                        <span id="sfx-val">15%</span>
+                    </div>
+                </div>
+
+                <div class="menu-footer">
+                    <button id="btn-back-settings" class="btn secondary" data-i18n="btn.back">VOLVER</button>
+                </div>
             </div>
 
-            <!-- Pause Menu -->
-            <div id="menu-pause" class="screen hidden">
-                <h2 data-i18n="pause.title">PAUSA</h2>
-                <button id="btn-resume" class="btn primary" data-i18n="btn.resume">REANUDAR</button>
-                <button id="btn-quit-pause" class="btn secondary" data-i18n="btn.menu">MENÚ PRINCIPAL</button>
-            </div>
+            <!-- Reset Confirmation Modal -->
+            <div id="modal-reset-confirmation" class="modal-overlay hidden">
+                <div class="modal-content" style="border-color: #ff0055; box-shadow: 0 0 30px rgba(255, 0, 85, 0.2);">
+                    <div class="modal-header">
+                        <h3 style="color: #ff0055;">¿BORRAR TODO?</h3>
+                        <button id="btn-close-reset" class="close-btn">&times;</button>
+                    </div>
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <p style="color: #fff; margin-bottom: 10px;">Esta acción eliminará <strong>todo tu
+                                progreso</strong>, incluyendo monedas, mejoras y skins.</p>
+                        <p style="color: #aaa;">No se puede deshacer.</p>
 
-            <!-- Game Over Menu -->
-            <div id="menu-gameover" class="screen hidden">
-                <h2 class="danger" data-i18n="gameover.title">JUEGO TERMINADO</h2>
-                <div class="score-display">
-                    <p><span data-i18n="gameover.score">PUNTOS: </span><span id="final-score">0</span></p>
-                    <p class="high-score"><span data-i18n="gameover.best">MEJOR: </span><span id="best-score">0</span>
-                    </p>
+                        <div class="menu-buttons" style="flex-direction: row; justify-content: center;">
+                            <button id="btn-confirm-reset" class="btn primary"
+                                style="background: linear-gradient(45deg, #ff0055, #ff4d4d); box-shadow: 0 0 10px #ff0055;">BORRAR</button>
+                            <button id="btn-cancel-reset" class="btn secondary">CANCELAR</button>
+                        </div>
+                    </div>
                 </div>
-                <button id="btn-restart" class="btn primary" data-i18n="btn.retry">REINTENTAR</button>
-                <button id="btn-quit-gameover" class="btn secondary" data-i18n="btn.menu">MENÚ PRINCIPAL</button>
-            </div>
 
-            <!-- HUD -->
-            <div id="hud" class="hidden">
-                <div class="hud-item"><span data-i18n="hud.score">PUNTUACIÓN: </span><span id="score-val">0</span></div>
-                <div id="dash-container">
-                    <div id="dash-bar"></div>
-                </div>
-                <div id="powerup-timer" class="hidden"><span data-i18n="hud.slowmo">CÁMARA LENTA: </span><span
-                        id="slow-val">0.0</span>s</div>
             </div>
+        </div>
+
+        <!-- Login Modal (Username/Password) -->
+        <div id="modal-login" class="modal-overlay hidden">
+            <div class="modal-content" style="border-color: #00ffaa; box-shadow: 0 0 30px rgba(0, 255, 170, 0.2);">
+                <div class="modal-header">
+                    <h3 style="color: #00ffaa;">CUENTA LOCAL</h3>
+                    <button id="btn-close-login" class="close-btn">&times;</button>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
+                    <input type="text" id="login-username" placeholder="Nombre de Usuario"
+                        style="padding: 10px; background: rgba(255,255,255,0.1); border: 1px solid #333; color: white; border-radius: 4px;">
+                    <input type="password" id="login-password" placeholder="Contraseña (min 4 chars)"
+                        style="padding: 10px; background: rgba(255,255,255,0.1); border: 1px solid #333; color: white; border-radius: 4px;">
+                    <p id="login-error" style="color: #ff4d4d; font-size: 0.8rem; min-height: 1.2em;"></p>
+                </div>
+                <div class="menu-buttons" style="flex-direction: row; justify-content: center; gap: 10px;">
+                    <button id="btn-submit-login" class="btn primary"
+                        style="background: linear-gradient(45deg, #00ffaa, #00cc88);">ENTRAR</button>
+                    <button id="btn-submit-register" class="btn secondary">REGISTRARSE</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pause Menu -->
+        <div id="menu-pause" class="screen hidden">
+            <h2 data-i18n="pause.title">PAUSA</h2>
+            <button id="btn-resume" class="btn primary" data-i18n="btn.resume">REANUDAR</button>
+            <button id="btn-quit-pause" class="btn secondary" data-i18n="btn.menu">MENÚ PRINCIPAL</button>
+        </div>
+
+        <!-- Game Over Menu -->
+        <div id="menu-gameover" class="screen hidden">
+            <h2 class="danger" data-i18n="gameover.title">JUEGO TERMINADO</h2>
+            <div class="stats-container">
+                <p><span data-i18n="gameover.score">PUNTUACIÓN</span>: <span id="final-score">0</span></p>
+                <p><span data-i18n="gameover.best">MEJOR</span>: <span id="best-score">0</span></p>
+                <p style="color: #ffff00; margin-top: 10px;">MONEDAS GANADAS: <span id="final-coins">0</span> 💎</p>
+            </div>
+            <!-- Revive Button (Hidden by default) -->
+            <button id="btn-revive" class="btn secondary hidden" data-i18n="btn.revive">🚩 REVIVIR (1
+                USO)</button>
+            <button id="btn-restart" class="btn primary" data-i18n="btn.restart">REINTENTAR</button>
+            <button id="btn-quit-gameover" class="btn secondary" data-i18n="btn.menu">MENÚ PRINCIPAL</button>
+        </div>
+
+        <!-- Victory Screen -->
+        <div id="menu-victory" class="screen hidden">
+            <h2 style="color: #FFD700; text-shadow: 0 0 20px #FFD700; font-size: 4rem;">¡VICTORIA!</h2>
+            <p style="font-size: 1.5rem; margin-bottom: 2rem;">Te has pasado el juego</p>
+            <div class="stats-container">
+                <p>PUNTUACIÓN FINAL: <span id="victory-score" style="color: #FFD700;">0</span></p>
+            </div>
+            <button id="btn-menu-victory" class="btn primary"
+                style="background: linear-gradient(45deg, #FFD700, #FFA500);">VOLVER AL MENÚ</button>
+        </div>
+        <!-- HUD -->
+        <div id="hud" class="hidden">
+            <div class="hud-item"><span id="hud-score-label">PUNTUACIÓN: </span><span id="score-val">0</span></div>
+            <div id="dash-container">
+                <div id="dash-bar"></div>
+            </div>
+            <div id="powerup-timer" class="hidden"><span data-i18n="hud.slowmo">CÁMARA LENTA: </span><span
+                    id="slow-val">0.0</span>s</div>
         </div>
     </div>
 
+    <!-- Mobile Controls -->
+    <div id="mobile-controls" class="hidden">
+        <div id="joystick-zone">
+            <div id="joystick-knob"></div>
+        </div>
+        <button id="btn-mobile-dash">DASH ⚡</button>
+    </div>
+
+
+
+    <!-- Debug Enemy Menu -->
+    <div id="debug-enemy-menu" class="screen hidden">
+        <h2 style="color: red;">SPAWN ENEMY</h2>
+        <div class="menu-buttons">
+            <button class="btn secondary small" onclick="game.spawnDebugEnemy('Obstacle')">Normal</button>
+            <button class="btn secondary small" style="color: red;"
+                onclick="game.spawnDebugEnemy('HeavyObstacle')">Heavy</button>
+            <button class="btn secondary small" style="color: white;"
+                onclick="game.spawnDebugEnemy('ChargerObstacle')">Charger</button>
+            <button class="btn secondary small" style="color: orange;"
+                onclick="game.spawnDebugEnemy('TrajectoryObstacle')">Trajectory</button>
+            <button class="btn secondary small" style="color: darkgreen;"
+                onclick="game.spawnDebugEnemy('ExplodingEnemy')">Exploding</button>
+            <button class="btn secondary small" style="color: cyan;"
+                onclick="game.spawnDebugEnemy('DiamondEnemy')">Diamond</button>
+            <button class="btn primary small" onclick="game.toggleDebugEnemyMenu()">CLOSE</button>
+        </div>
+    </div>
+
+    <!-- Debug Menu -->
+    <div id="debug-menu" class="screen hidden">
+        <h2 style="color: red;">DEBUG MENU</h2>
+        <div class="menu-buttons">
+            <button class="btn primary small" style="background-color: #333; border: 1px solid white;"
+                onclick="game.startDebugBoss(9)">BOSS 10 (SECRET)</button>
+            <button class="btn primary small" onclick="game.startDebugBoss(0)">BOSS 1</button>
+            <button class="btn primary small" onclick="game.startDebugBoss(1)">BOSS 2</button>
+            <button class="btn primary small" onclick="game.startDebugBoss(2)">BOSS 3</button>
+            <button class="btn primary small" onclick="game.startDebugBoss(3)">BOSS 4</button>
+            <button class="btn primary small" onclick="game.startDebugBoss(4)">BOSS 5</button>
+            <button class="btn primary small" onclick="game.startDebugBoss(5)">BOSS 6</button>
+            <button class="btn primary small" onclick="game.startDebugBoss(6)">BOSS 7</button>
+            <button class="btn primary small" onclick="game.startDebugBoss(7)">BOSS 8</button>
+            <button class="btn primary small" onclick="game.startDebugBoss(8)">BOSS 9</button>
+            <button class="btn secondary small" onclick="game.toggleDebugMenu()">CANCEL</button>
+        </div>
+    </div>
+
+
+
+
     <!-- Game Scripts (loaded in dependency order) -->
-    <script src="src/Collision.js"></script>
+    <!-- Firebase Removed -->
+
     <!-- Game Scripts (loaded in dependency order) -->
     <script src="src/LocalizationManager.js"></script>
+    <script src="src/AccountManager.js"></script>
+    <script src="src/SettingsManager.js"></script>
     <script src="src/Collision.js"></script>
     <script src="src/InputHandler.js"></script>
     <script src="src/ScoreManager.js"></script>
     <script src="src/DifficultyManager.js"></script>
     <script src="src/SkinManager.js"></script>
+    <script src="src/UpgradeManager.js"></script>
+    <script src="src/ParticleManager.js"></script>
     <script src="src/Player.js"></script>
+    <script src="src/Fragment.js"></script>
+    <script src="src/ExplosionEffect.js"></script>
     <script src="src/Obstacle.js"></script>
     <script src="src/HeavyObstacle.js"></script>
     <script src="src/ChargerObstacle.js"></script>
@@ -114,13 +518,24 @@
     <script src="src/ObstacleManager.js"></script>
     <script src="src/Projectile.js"></script>
     <script src="src/ExplodingEnemy.js"></script>
+    <script src="src/DiamondEnemy.js"></script>
+    <script src="src/Laser.js"></script>
+    <script src="src/Boss.js"></script>
+    <script src="src/RandomBoss.js"></script>
+    <script src="src/BlueHeptagonBoss.js"></script>
+    <script src="src/PurpleOctagonBoss.js"></script>
+    <script src="src/EnneagonBoss.js"></script>
+    <script src="src/Boss9.js"></script>
+    <script src="src/SecretBoss.js"></script>
     <script src="src/PowerUp.js"></script>
     <script src="src/ScorePowerUp.js"></script>
     <script src="src/ShieldPowerUp.js"></script>
     <script src="src/SpeedPowerUp.js"></script>
+    <script src="src/HealthPowerUp.js"></script>
     <script src="src/PowerUpManager.js"></script>
-    <script src="src/Game.js"></script>
-    <script src="src/main.js"></script>
+    <script src="src/BoxManager.js"></script>
+    <script src="src/Game.js?v=7"></script>
+    <script src="src/main.js?v=7"></script>
 </body>
 
 </html>

@@ -1,6 +1,6 @@
 class HeavyObstacle extends Obstacle {
-    constructor(game) {
-        super(game);
+    constructor(game, speedScale = 1.0) {
+        super(game, speedScale);
         this.width = Math.random() * 40 + 60; // Larger: 60-100
         this.height = Math.random() * 40 + 60; // Larger: 60-100
         this.color = '#ff0000'; // Red
@@ -21,7 +21,7 @@ class HeavyObstacle extends Obstacle {
         });
         ctx.globalAlpha = 1.0;
 
-        ctx.shadowBlur = 15;
+        ctx.shadowBlur = this.game.settings.getShadowBlur(15);
         ctx.shadowColor = this.color;
         ctx.fillStyle = this.color; // Fill it to look "heavy"/solid
         ctx.fillRect(this.x, this.y, this.width, this.height);

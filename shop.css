@@ -1,0 +1,501 @@
+/* Shop Redesign */
+#menu-shop {
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+}
+
+.shop-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 1rem;
+}
+
+#shop-coins-display {
+    font-size: 1.5rem;
+    color: #ffd700;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    border: 1px solid #ffd700;
+}
+
+.shop-tabs {
+    display: flex;
+    gap: 15px;
+}
+
+.btn-tab {
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: #666;
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    padding: 5px 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 2px;
+}
+
+.btn-tab.active {
+    color: #00f3ff;
+    border-bottom-color: #00f3ff;
+    text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
+}
+
+.btn-tab:hover:not(.active) {
+    color: #ccc;
+}
+
+.shop-content {
+    display: flex;
+    gap: 40px;
+    height: 100%;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* Preview Section */
+.shop-preview {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 16px;
+    padding: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#shop-preview-box {
+    width: 200px;
+    height: 200px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 2px solid var(--primary-color);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 0 30px rgba(0, 243, 255, 0.1);
+}
+
+#shop-preview-char {
+    width: 80px;
+    height: 80px;
+    background: #00f3ff;
+    box-shadow: 0 0 20px currentColor;
+    /* Glows with its own color */
+}
+
+#shop-preview-name {
+    font-size: 2rem;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+#shop-preview-desc {
+    color: #aaa;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+/* List Section */
+.shop-list-container {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+#shop-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.shop-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.shop-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateX(5px);
+}
+
+.shop-item.selected {
+    border-color: var(--primary-color);
+    background: rgba(0, 243, 255, 0.1);
+}
+
+.shop-item.equipped {
+    border-color: #39ff14;
+    /* Lime for equipped */
+}
+
+.shop-item.locked {
+    opacity: 0.7;
+    border-style: dashed;
+}
+
+.shop-item-content {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+}
+
+.shop-item-color {
+    width: 30px;
+    height: 30px;
+    border-radius: 4px;
+}
+
+.shop-item-name {
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+/* ================================================================
+   DAILY SHOP — Estilo Neón JSAB
+   ================================================================ */
+
+/* Botón cuadrado en el menú principal */
+.btn-daily-shop {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    width: 70px;
+    height: 70px;
+    background: rgba(0, 0, 0, 0.7);
+    border: 2px solid #00f3ff;
+    border-radius: 12px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    transition: all 0.3s ease;
+    z-index: 10;
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.3), inset 0 0 15px rgba(0, 243, 255, 0.05);
+    animation: dailyShopPulse 2s ease-in-out infinite;
+}
+
+.btn-daily-shop:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 25px rgba(0, 243, 255, 0.6), inset 0 0 20px rgba(0, 243, 255, 0.1);
+    border-color: #fff;
+}
+
+.daily-shop-btn-icon {
+    font-size: 1.6rem;
+    line-height: 1;
+}
+
+.daily-shop-btn-text {
+    font-size: 0.55rem;
+    font-weight: 700;
+    color: #00f3ff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-family: 'Outfit', sans-serif;
+}
+
+@keyframes dailyShopPulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 15px rgba(0, 243, 255, 0.3), inset 0 0 15px rgba(0, 243, 255, 0.05);
+    }
+
+    50% {
+        box-shadow: 0 0 25px rgba(0, 243, 255, 0.5), inset 0 0 20px rgba(0, 243, 255, 0.1);
+    }
+}
+
+/* Overlay completo */
+.daily-shop-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.92);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    animation: dailyShopFadeIn 0.3s ease-out;
+}
+
+.daily-shop-overlay.hidden {
+    display: none;
+}
+
+@keyframes dailyShopFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Contenedor principal */
+.daily-shop-container {
+    width: 90%;
+    max-width: 700px;
+    background: rgba(5, 5, 20, 0.95);
+    border: 2px solid #00f3ff;
+    border-radius: 20px;
+    padding: 1.5rem 2rem;
+    box-shadow: 0 0 40px rgba(0, 243, 255, 0.2), 0 0 80px rgba(0, 243, 255, 0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.2rem;
+}
+
+/* Header */
+.daily-shop-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid rgba(0, 243, 255, 0.2);
+}
+
+.daily-shop-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #00f3ff;
+    text-shadow: 0 0 15px rgba(0, 243, 255, 0.6);
+    margin: 0;
+    letter-spacing: 2px;
+}
+
+.daily-shop-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+}
+
+.daily-shop-diamonds {
+    font-size: 1.2rem;
+    color: #ffd700;
+    font-weight: 700;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+}
+
+.daily-shop-timer {
+    font-size: 0.75rem;
+    color: #aaa;
+    font-family: 'Outfit', monospace;
+    animation: timerPulse 2s ease-in-out infinite;
+}
+
+@keyframes timerPulse {
+
+    0%,
+    100% {
+        opacity: 0.7;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+/* Grid de 3 slots */
+.daily-shop-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    width: 100%;
+}
+
+/* Slot individual */
+.daily-shop-slot {
+    background: rgba(255, 255, 255, 0.03);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 1.2rem 0.8rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.7rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.daily-shop-slot::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(ellipse, rgba(0, 243, 255, 0.03) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.daily-shop-slot:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+}
+
+/* Rareza: colores del borde */
+.daily-shop-slot[data-rarity="COMÚN"] {
+    border-color: rgba(100, 100, 100, 0.5);
+}
+
+.daily-shop-slot[data-rarity="RARO"] {
+    border-color: #00aaff;
+    box-shadow: 0 0 15px rgba(0, 170, 255, 0.15);
+}
+
+.daily-shop-slot[data-rarity="ÉPICO"] {
+    border-color: #cc00ff;
+    box-shadow: 0 0 15px rgba(204, 0, 255, 0.15);
+}
+
+.daily-shop-slot[data-rarity="LEGENDARIO"] {
+    border-color: #ffd700;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+    animation: legendaryGlow 2s ease-in-out infinite;
+}
+
+@keyframes legendaryGlow {
+
+    0%,
+    100% {
+        box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
+    }
+
+    50% {
+        box-shadow: 0 0 30px rgba(255, 215, 0, 0.4), 0 0 60px rgba(255, 215, 0, 0.1);
+    }
+}
+
+/* Canvas preview dentro del slot */
+.daily-shop-slot-canvas {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.4);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Nombre de la skin */
+.daily-shop-slot-name {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #fff;
+    text-align: center;
+    letter-spacing: 0.5px;
+}
+
+/* Badge de rareza */
+.daily-shop-slot-rarity {
+    font-size: 0.65rem;
+    font-weight: 500;
+    padding: 2px 10px;
+    border-radius: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.daily-shop-slot-rarity[data-rarity="COMÚN"] {
+    background: rgba(100, 100, 100, 0.3);
+    color: #999;
+}
+
+.daily-shop-slot-rarity[data-rarity="RARO"] {
+    background: rgba(0, 170, 255, 0.15);
+    color: #00aaff;
+}
+
+.daily-shop-slot-rarity[data-rarity="ÉPICO"] {
+    background: rgba(204, 0, 255, 0.15);
+    color: #cc00ff;
+}
+
+.daily-shop-slot-rarity[data-rarity="LEGENDARIO"] {
+    background: rgba(255, 215, 0, 0.15);
+    color: #ffd700;
+}
+
+/* Botón de compra */
+.daily-shop-slot-btn {
+    width: 100%;
+    padding: 0.5rem;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.daily-shop-slot-btn.buy {
+    background: linear-gradient(135deg, #00f3ff, #0088ff);
+    color: #000;
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
+}
+
+.daily-shop-slot-btn.buy:hover {
+    box-shadow: 0 0 25px rgba(0, 243, 255, 0.5);
+    transform: scale(1.03);
+}
+
+.daily-shop-slot-btn.purchased {
+    background: rgba(57, 255, 20, 0.15);
+    color: #39ff14;
+    border: 1px solid rgba(57, 255, 20, 0.3);
+    cursor: default;
+}
+
+.daily-shop-slot-btn.owned {
+    background: rgba(57, 255, 20, 0.1);
+    color: #39ff14;
+    border: 1px solid rgba(57, 255, 20, 0.2);
+    cursor: default;
+}
+
+.daily-shop-slot-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Botón de cerrar */
+.daily-shop-close {
+    margin-top: 0.5rem;
+    min-width: 150px;
+}

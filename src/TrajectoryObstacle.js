@@ -1,11 +1,15 @@
 class TrajectoryObstacle {
-    constructor(game) {
+    constructor(game, startX, startY) {
         this.game = game;
         this.color = '#ff8c00'; // Orange
         this.markedForDeletion = false;
 
-        // Start Point (Random Edge)
-        this.p1 = this.getRandomEdgePoint();
+        // Start Point: Use provided args or Random Edge
+        if (startX !== undefined && startY !== undefined) {
+            this.p1 = { x: startX, y: startY };
+        } else {
+            this.p1 = this.getRandomEdgePoint();
+        }
 
         // End Point (Direction through Player's CURRENT position)
         const playerX = this.game.player.x + this.game.player.width / 2;
@@ -13,7 +17,7 @@ class TrajectoryObstacle {
 
         const dirX = playerX - this.p1.x;
         const dirY = playerY - this.p1.y;
-        const length = Math.hypot(dirX, dirY);
+        const length = Math.hypot(dirX, dirY) || 1;
 
         // Extend significantly to ensure it goes off screen (e.g., 2000px)
         const extension = 2000;
@@ -62,7 +66,7 @@ class TrajectoryObstacle {
                 this.state = this.STATES.DASH;
                 this.timer = 0;
 
-                // Calculate velocity for Dash
+                // Calculate velocity for Dash based on PRE-CALCULATED p2
                 const dx = this.p2.x - this.p1.x;
                 const dy = this.p2.y - this.p1.y;
                 const speed = 25; // Very fast
@@ -91,15 +95,11 @@ class TrajectoryObstacle {
                 });
             }
 
-            // Check if reached destination
+            // Check if reached destination or offscreen
             const currentDist = Math.hypot(this.x - this.p1.x, this.y - this.p1.y);
-            if (currentDist >= this.totalDist) {
-                this.state = this.STATES.EXPLODE;
-                this.timer = 0;
-                this.x = this.p2.x;
-                this.y = this.p2.y;
-                this.width = 100; // Expansion size
-                this.height = 100;
+            // Use a generous distance check or screen bounds
+            if (currentDist >= 2000 || this.x < -100 || this.x > this.game.width + 100 || this.y < -100 || this.y > this.game.height + 100) {
+                this.markedForDeletion = true; // Just delete, don't explode (unless hits something)
             }
 
         } else if (this.state === this.STATES.EXPLODE) {
@@ -131,8 +131,14 @@ class TrajectoryObstacle {
         ctx.globalAlpha = 1.0;
 
         if (this.state === this.STATES.WARNING) {
+            // Draw Enemy Body (Aiming)
+            ctx.fillStyle = this.color;
+            ctx.shadowBlur = this.game.settings.getShadowBlur(10);
+            ctx.shadowColor = this.color;
+            ctx.fillRect(this.x - this.width / 2, this.y - this.height / 2, this.width, this.height);
+
             // Draw Blinking Line
-            if (Math.floor(this.timer / 200) % 2 === 0) {
+            if (Math.floor(this.timer / 100) % 2 === 0) { // Faster blink
                 ctx.beginPath();
                 ctx.moveTo(this.p1.x, this.p1.y);
                 ctx.lineTo(this.p2.x, this.p2.y);

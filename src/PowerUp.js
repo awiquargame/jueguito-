@@ -53,7 +53,7 @@ class PowerUp {
         this.y += this.vy * timeScale;
 
         // Particles
-        if (Math.random() < 0.2) {
+        if (this.game.settings.shouldDrawParticles() && Math.random() < 0.2) {
             this.particles.push({
                 x: this.x + this.width / 2 + (Math.random() * 10 - 5),
                 y: this.y + this.height / 2 + (Math.random() * 10 - 5),
@@ -84,14 +84,17 @@ class PowerUp {
         ctx.save();
 
         // Draw Particles
-        this.particles.forEach(p => {
-            ctx.globalAlpha = p.alpha;
-            ctx.fillStyle = p.color;
-            ctx.fillRect(p.x, p.y, p.size, p.size);
-        });
+        // Draw Particles
+        if (this.game.settings.shouldDrawParticles()) {
+            this.particles.forEach(p => {
+                ctx.globalAlpha = p.alpha;
+                ctx.fillStyle = p.color;
+                ctx.fillRect(p.x, p.y, p.size, p.size);
+            });
+        }
         ctx.globalAlpha = 1.0;
 
-        ctx.shadowBlur = 15;
+        ctx.shadowBlur = this.game.settings.getShadowBlur(15);
         ctx.shadowColor = this.color;
         ctx.fillStyle = this.color;
 

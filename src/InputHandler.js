@@ -8,24 +8,36 @@ class InputHandler {
             right: false,
             space: false,
             '1': false,
-            '9': false
+            '9': false,
+            '2': false,
+            '3': false,
+            'p': false,
+            'o': false,
+            'f': false,
+            'h': false,
+            'j': false,
+            'g': false,
+            't': false,
+            'v': false,
+            'c': false
         };
-        this.cheatTriggered = false;
+        this.cheatBuffer = [];
+        this.maxBufferLength = 10;
 
-        this.jakeKeys = { j: false, a: false, k: false, e: false };
+        // PC Controls Only
+        this.controlMode = 'pc';
 
         window.addEventListener('keydown', (e) => {
             const k = e.key.toLowerCase();
 
-            // JAKE Detection
-            if (this.jakeKeys.hasOwnProperty(k)) {
-                this.jakeKeys[k] = true;
-                if (this.jakeKeys.j && this.jakeKeys.a && this.jakeKeys.k && this.jakeKeys.e) {
-                    this.game.activateJakeSkin();
-                }
+            // Track last N keys for codes
+            this.cheatBuffer.push(k);
+            if (this.cheatBuffer.length > this.maxBufferLength) {
+                this.cheatBuffer.shift();
             }
 
             if (this.game.currentState === this.game.STATES.PLAYING ||
+                this.game.currentState === this.game.STATES.COLOSSEUM ||
                 this.game.currentState === this.game.STATES.MENU ||
                 this.game.currentState === this.game.STATES.PAUSED) {
 
@@ -48,31 +60,21 @@ class InputHandler {
                         break;
                     case 'p':
                     case 'escape':
-                        this.togglePause();
+                        if (!e.repeat) { // Prevent repeat if held
+                            this.keys['p'] = true;
+                            this.togglePause();
+                        }
                         break;
                     case ' ':
                         this.keys.space = true;
                         if (this.game.player) this.game.player.attemptDash();
                         break;
-                    case '1':
-                        this.keys['1'] = true;
-                        this.checkCheat();
-                        break;
-                    case '9':
-                        this.keys['9'] = true;
-                        this.checkCheat();
-                        break;
                 }
             }
-
-
         });
 
         window.addEventListener('keyup', (e) => {
             const k = e.key.toLowerCase();
-            if (this.jakeKeys.hasOwnProperty(k)) {
-                this.jakeKeys[k] = false;
-            }
 
             switch (k) {
                 case 'w':
@@ -94,36 +96,62 @@ class InputHandler {
                 case ' ':
                     this.keys.space = false;
                     break;
-                case '1':
-                    this.keys['1'] = false;
-                    this.cheatTriggered = false; // Reset cheat flag
-                    break;
-                case '9':
-                    this.keys['9'] = false;
-                    this.cheatTriggered = false; // Reset cheat flag
+                case 'p':
+                    this.keys['p'] = false;
                     break;
             }
         });
     }
 
-    checkCheat() {
-        if (this.keys['1'] && this.keys['9'] && !this.cheatTriggered) {
-            this.game.scoreManager.score += 2000;
-            this.cheatTriggered = true;
-            console.log("Cheat activated: +2000 points");
+    checkSequence(codeArray) {
+        if (this.cheatBuffer.length < codeArray.length) return false;
 
-            // Optional: Play a sound or visual feedback?
-            if (this.game.powerUpSound) {
-                this.game.powerUpSound.currentTime = 0;
-                this.game.powerUpSound.play().catch(e => { });
+        const startIdx = this.cheatBuffer.length - codeArray.length;
+        for (let i = 0; i < codeArray.length; i++) {
+            if (this.cheatBuffer[startIdx + i] !== codeArray[i]) {
+                return false;
             }
         }
+        return true;
     }
+
     togglePause() {
-        if (this.game.currentState === this.game.STATES.PLAYING) {
+        if (this.game.currentState === this.game.STATES.PLAYING || this.game.currentState === this.game.STATES.COLOSSEUM) {
             this.game.pause();
         } else if (this.game.currentState === this.game.STATES.PAUSED) {
             this.game.resume();
+        }
+    }
+
+    handleJoystickMove(touchX, touchY) {
+        const rect = this.joystickZone.getBoundingClientRect();
+        const maxDist = rect.width / 2;
+
+        const deltaX = touchX - this.joystickCenter.x;
+        const deltaY = touchY - this.joystickCenter.y;
+
+        const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+        const angle = Math.atan2(deltaY, deltaX);
+
+        const clampedDist = Math.min(distance, maxDist);
+
+        const moveX = Math.cos(angle) * clampedDist;
+        const moveY = Math.sin(angle) * clampedDist;
+
+        this.joystickKnob.style.transform = `translate(calc(-50% + ${moveX}px), calc(-50% + ${moveY}px))`;
+
+        // Update Keys based on angle
+        // Deadzone check
+        if (distance > 10) {
+            this.keys.right = Math.abs(deltaX) > Math.abs(deltaY) && deltaX > 0;
+            this.keys.left = Math.abs(deltaX) > Math.abs(deltaY) && deltaX < 0;
+            this.keys.down = Math.abs(deltaY) > Math.abs(deltaX) && deltaY > 0;
+            this.keys.up = Math.abs(deltaY) > Math.abs(deltaX) && deltaY < 0;
+        } else {
+            this.keys.up = false;
+            this.keys.down = false;
+            this.keys.left = false;
+            this.keys.right = false;
         }
     }
 }

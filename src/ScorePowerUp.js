@@ -57,7 +57,7 @@ class ScorePowerUp {
 
     draw(ctx) {
         ctx.save();
-        ctx.shadowBlur = 15;
+        ctx.shadowBlur = this.game.settings.getShadowBlur(15);
         ctx.shadowColor = this.color;
         ctx.fillStyle = this.color;
 

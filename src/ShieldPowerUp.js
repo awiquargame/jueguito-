@@ -53,7 +53,7 @@ class ShieldPowerUp {
 
     draw(ctx) {
         ctx.save();
-        ctx.shadowBlur = 15;
+        ctx.shadowBlur = this.game.settings.getShadowBlur(15);
         ctx.shadowColor = this.color;
 
         // Outer ring glow

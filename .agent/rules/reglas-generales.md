@@ -1,6 +1,5 @@
 ---
 trigger: always_on
-glob:
-description:
 ---
 
+quiero que sea un juego parecido al JSAB de estilo neon

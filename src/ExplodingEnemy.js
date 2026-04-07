@@ -5,7 +5,7 @@ class ExplodingEnemy {
         this.height = 40;
         this.markedForDeletion = false;
         this.color = '#006400'; // Dark Green
-        this.isHarmless = true; // Body does not hurt player
+        this.isHarmless = false; // Is collisionable (hurts player, or destroys if shield)
 
         this.spawn();
 
@@ -15,6 +15,7 @@ class ExplodingEnemy {
         this.hasExploded = false;
 
         this.particles = [];
+        this.spawnParticles = true; // Default to true
     }
 
     spawn() {
@@ -71,46 +72,16 @@ class ExplodingEnemy {
             // Stop and Explode
             this.hasExploded = true;
             this.explode();
-        } else {
-            // Give time for particles to fade before deleting
-            this.explodeTimer += deltaTime;
-            if (this.explodeTimer > 500) { // 0.5s after explosion
-                this.markedForDeletion = true;
-            }
         }
-
-        // Spawn Particles (Dark Green)
-        if (!this.hasExploded) {
-            if (Math.random() < 0.3) {
-                this.particles.push({
-                    x: this.x + this.width / 2 + (Math.random() * 20 - 10),
-                    y: this.y + this.height / 2 + (Math.random() * 20 - 10),
-                    vx: (Math.random() - 0.5),
-                    vy: (Math.random() - 0.5),
-                    life: 300,
-                    maxLife: 300,
-                    size: Math.random() * 3 + 2,
-                    color: this.color
-                });
-            }
-        }
-
-        // Update Particles
-        this.particles.forEach(p => {
-            p.x += p.vx * timeScale;
-            p.y += p.vy * timeScale;
-            p.life -= deltaTime;
-            p.alpha = p.life / p.maxLife;
-        });
-        this.particles = this.particles.filter(p => p.life > 0);
+        // No need to wait for particles anymore
     }
 
     explode() {
         // Spawn Projectiles in all directions (360 degrees)
-        const projectileCount = 12; // Increased count for 360 coverage
-        const stepAngle = (Math.PI * 2) / projectileCount;
+        const count = this.projectileCount || 12; // Allow custom count, default 12
+        const stepAngle = (Math.PI * 2) / count;
 
-        for (let i = 0; i < projectileCount; i++) {
+        for (let i = 0; i < count; i++) {
             const angle = i * stepAngle;
 
             const speed = 6 + Math.random() * 2; // Fast projectiles
@@ -123,34 +94,29 @@ class ExplodingEnemy {
         }
 
         // Explosion visual effect (particles)
-        for (let i = 0; i < 20; i++) {
-            this.particles.push({
-                x: this.x + this.width / 2,
-                y: this.y + this.height / 2,
-                vx: (Math.random() - 0.5) * 10,
-                vy: (Math.random() - 0.5) * 10,
-                life: 500,
-                maxLife: 500,
-                size: Math.random() * 5 + 3,
-                color: this.color
-            });
+        if (this.spawnParticles) {
+            const ex = new ExplosionEffect(
+                this.game,
+                this.x,
+                this.y,
+                this.color,
+                this.width,
+                this.height
+            );
+            this.game.obstacleManager.obstacles.push(ex);
         }
+
+        // Mark for deletion immediately as ExplosionEffect handles the visuals
+        this.markedForDeletion = true;
     }
 
     draw(ctx) {
         ctx.save();
 
-        // Draw Particles
-        this.particles.forEach(p => {
-            ctx.globalAlpha = p.alpha;
-            ctx.fillStyle = p.color;
-            ctx.fillRect(p.x, p.y, p.size, p.size);
-        });
-
         if (!this.hasExploded) {
             ctx.globalAlpha = 1.0;
             ctx.fillStyle = this.color;
-            ctx.shadowBlur = 15;
+            ctx.shadowBlur = this.game.settings.getShadowBlur(15);
             ctx.shadowColor = this.color;
             ctx.fillRect(this.x, this.y, this.width, this.height);
 

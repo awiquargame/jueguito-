@@ -15,11 +15,10 @@ class DifficultyManager {
     update(deltaTime) {
         this.elapsedTime += deltaTime;
 
-        // Increase difficulty every 5 seconds
-        if (this.elapsedTime > 5000 * this.difficultyLevel) {
+        // Increase difficulty every 10 seconds (easier)
+        if (this.elapsedTime > 10000 * this.difficultyLevel) {
             this.difficultyLevel++;
-            this.speedMultiplier += 0.1;
-            // console.log(`Difficulty Increased: ${this.difficultyLevel}, SpeedMult: ${this.speedMultiplier}`);
+            this.speedMultiplier += 0.05; // Slower speed increase
         }
     }
 }

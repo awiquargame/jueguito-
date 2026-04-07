@@ -1,0 +1,22 @@
+{
+  "name": "jueguito-neon",
+  "version": "1.0.0",
+  "description": "Un juego de estilo neon parecido a JSAB",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "start-server": "node server.js",
+    "build": "electron-packager . Jueguito --platform=win32 --arch=x64 --overwrite --icon=assets/icon.ico --win32metadata.requested-execution-level=asInvoker"
+  },
+  "keywords": [
+    "game",
+    "neon",
+    "jsab"
+  ],
+  "author": "Usuario",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^25.0.0",
+    "electron-packager": "^17.1.1"
+  }
+}

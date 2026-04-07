@@ -7,7 +7,7 @@ class SpeedPowerUp extends PowerUp {
     draw(ctx) {
         ctx.save();
         ctx.globalAlpha = 1.0;
-        ctx.shadowBlur = 15;
+        ctx.shadowBlur = this.game.settings.getShadowBlur(15);
         ctx.shadowColor = this.color;
         ctx.fillStyle = this.color;
 
@@ -18,14 +18,16 @@ class SpeedPowerUp extends PowerUp {
         ctx.fill();
 
         // Particles
-        this.particles.forEach(p => {
-            ctx.save();
-            ctx.globalAlpha = p.alpha;
-            ctx.fillStyle = p.color;
-            ctx.translate(p.x, p.y);
-            ctx.fillRect(0, 0, p.size, p.size);
-            ctx.restore();
-        });
+        if (this.game.settings.shouldDrawParticles()) {
+            this.particles.forEach(p => {
+                ctx.save();
+                ctx.globalAlpha = p.alpha;
+                ctx.fillStyle = p.color;
+                ctx.translate(p.x, p.y);
+                ctx.fillRect(0, 0, p.size, p.size);
+                ctx.restore();
+            });
+        }
 
         ctx.restore();
     }

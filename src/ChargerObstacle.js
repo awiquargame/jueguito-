@@ -132,7 +132,7 @@ class ChargerObstacle {
 
             // Shake effect
             if (Math.floor(Date.now() / 100) % 2 === 0) {
-                ctx.shadowBlur = 20;
+                ctx.shadowBlur = this.game.settings.getShadowBlur(20);
                 ctx.shadowColor = 'red';
             }
         }
