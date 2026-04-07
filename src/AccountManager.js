@@ -2,8 +2,7 @@ class AccountManager {
     constructor(game) {
         this.game = game;
         this.user = null; // Stores { username, data }
-        const host = window.location.hostname || 'localhost';
-        this.serverUrl = `http://${host}:3000`; // Dynamic server URL
+        this.serverUrl = 'https://jueguito-016k.onrender.com'; // Global Render Server
 
         this.setupEventListeners();
         this.checkLocalSession();
