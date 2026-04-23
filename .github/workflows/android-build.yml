@@ -31,6 +31,11 @@ jobs:
           cp -r assets www/
           cp -r src www/
 
+      - name: Generate App Icons
+        run: |
+          npm install -D @capacitor/assets
+          npx capacitor-assets generate --android
+
       - name: Capacitor Sync
         run: npx cap sync android
 
