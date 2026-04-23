@@ -52,49 +52,11 @@ body::before {
 
 #game-container {
     position: relative;
-    width: 800px;
-    height: 600px;
-    box-shadow: 0 0 50px rgba(0, 243, 255, 0.1);
-    border: 1px solid var(--glass-border);
-    border-radius: 12px;
+    width: 100vw;
+    height: 100vh;
     overflow: hidden;
     background: #000;
-    transition: width 0.3s ease, height 0.3s ease;
     transform: translateZ(0);
-    /* Force containing block */
-}
-
-#game-container.size-small {
-    width: 600px;
-    height: 450px;
-}
-
-#game-container.size-small .title {
-    font-size: 2.5rem;
-}
-
-#game-container.size-small .btn {
-    padding: 0.6rem 2rem;
-    font-size: 1rem;
-    margin: 0;
-}
-
-#game-container.size-small .menu-buttons {
-    gap: 10px;
-    margin-bottom: 1rem;
-}
-
-#game-container.size-large {
-    width: 1000px;
-    height: 750px;
-}
-
-#game-container.size-fullscreen {
-    width: min(100vw, 133.33vh);
-    height: min(100vh, 75vw);
-    border-radius: 0;
-    max-width: none;
-    max-height: none;
 }
 
 canvas {
@@ -132,7 +94,7 @@ canvas {
     transition: opacity 0.3s ease;
 }
 
-.screen.hidden {
+.screen.hidden_old {
     opacity: 0;
     pointer-events: none;
     visibility: hidden;
@@ -1637,7 +1599,520 @@ h2.danger {
     display: block;
 }
 
+
 #btn-claim-box:hover {
     transform: scale(1.1);
-    box-shadow: 0 0 40px rgba(0, 255, 255, 0.7);
-}
+    box-shadow: 0 0 40px rgba(0, 243, 255, 0.7);
+}
+
+/* --- Mobile Adaptation & Touch Controls --- */
+#mobile-controls {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 200;
+}
+
+#mobile-controls.hidden {
+    display: none !important;
+}
+
+/* Joystick Styles */
+#joystick-zone {
+    position: absolute;
+    bottom: 40px;
+    left: 40px;
+    width: 120px;
+    height: 120px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 3px solid var(--primary-color);
+    border-radius: 50%;
+    pointer-events: auto;
+    box-shadow: 0 0 20px rgba(0, 243, 255, 0.3), inset 0 0 15px rgba(0, 243, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    touch-action: none;
+}
+
+#joystick-knob {
+    width: 50px;
+    height: 50px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 25px var(--primary-color);
+    pointer-events: none;
+    transition: transform 0.05s linear;
+}
+
+/* Dash Button Styles */
+#btn-mobile-dash {
+    position: absolute;
+    bottom: 40px;
+    right: 40px;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--danger-color), var(--secondary-color));
+    border: 3px solid #fff;
+    color: #fff;
+    font-family: var(--font-main);
+    font-weight: 900;
+    font-size: 1.2rem;
+    pointer-events: auto;
+    box-shadow: 0 0 30px rgba(255, 0, 85, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+    touch-action: none;
+    animation: dashPulse 2s infinite;
+}
+
+#btn-mobile-dash:active {
+    transform: scale(0.9);
+    filter: brightness(1.2);
+}
+
+@keyframes dashPulse {
+    0%, 100% { box-shadow: 0 0 30px rgba(255, 0, 85, 0.6); }
+    50% { box-shadow: 0 0 50px rgba(255, 0, 85, 0.9); }
+}
+
+#btn-mobile-pause {
+    position: absolute;
+    top: 10px;
+    left: 10px; 
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: rgba(0, 243, 255, 0.2);
+    border: 1px solid var(--primary-color);
+    backdrop-filter: blur(2px);
+    color: var(--primary-color);
+    cursor: pointer;
+    font-size: 0.7rem;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: auto !important;
+    z-index: 1000000;
+    box-shadow: 0 0 8px rgba(0, 243, 255, 0.4);
+    touch-action: none;
+}
+
+#btn-mobile-pause:active {
+    background: rgba(0, 243, 255, 0.2);
+    transform: scale(0.9);
+    box-shadow: 0 0 25px rgba(0, 243, 255, 0.6);
+}
+
+/* Responsive Scaling for Container */
+#game-container.mobile-mode {
+    width: 100vw !important;
+    height: 100vh !important;
+    border-radius: 0;
+    border: none;
+    max-width: none;
+    max-height: none;
+}
+
+#game-container.mobile-mode canvas {
+    width: 100%;
+    height: 100%;
+}
+
+/* UI Adjustments for small screens */
+@media (max-width: 768px) {
+    h1.title {
+        font-size: 2.5rem;
+    }
+    
+    .subtitle {
+        font-size: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .menu-buttons {
+        gap: 10px;
+    }
+    
+    .btn {
+        padding: 0.8rem 2rem;
+        font-size: 1rem;
+    }
+    
+    .coin-display, #hud {
+        font-size: 1rem;
+    }
+    
+    .abilities-container {
+        gap: 15px;
+    }
+    
+    .ability-slot {
+        width: 80px;
+        height: 80px;
+    }
+}
+/* ==========================================================================
+   FINAL VISIBILITY & UI RECOVERY SYSTEM
+   ========================================================================== */
+
+/* Universal Hidden Utility */
+.hidden {
+    display: none !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    visibility: hidden !important;
+    z-index: -1000 !important;
+}
+
+/* Universal Active Screen Utility - High Precedence */
+.screen.active, .screen.active_mode, .active {
+    display: flex !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    visibility: visible !important;
+    z-index: 100 !important;
+}
+
+/* Fix for overlapping buttons seen in user screenshots */
+.btn-colosseum-banner, .competitive-corner, #btn-competitive, #btn-colosseum {
+    display: none; /* Hide by default */
+}
+
+/* Show only in Main Menu */
+.screen.active#menu-start .competitive-corner,
+.screen.active#menu-start #btn-competitive,
+.screen.active#menu-start #btn-colosseum {
+    display: flex !important;
+}
+
+/* Colosseum Banner Styles */
+.colosseum-banner {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    width: 130px !important;
+    height: 40px !important;
+    padding: 0 8px !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    background: linear-gradient(45deg, #FFD700, #FFA500) !important;
+    border: 3px solid #FFD700 !important;
+    border-radius: 15px !important;
+    color: #000 !important;
+    text-shadow: none !important;
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.4) !important;
+    animation: goldenGlow 2s infinite alternate;
+}
+
+.colosseum-icon {
+    font-size: 1rem;
+}
+
+.colosseum-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.colosseum-title {
+    font-weight: 900;
+    font-size: 0.75rem;
+    line-height: 1;
+}
+
+.colosseum-tag {
+    font-size: 0.7rem;
+    font-weight: 500;
+    background: #000;
+    color: #FFD700;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-top: 5px;
+    letter-spacing: 1px;
+}
+
+@keyframes goldenGlow {
+    from { box-shadow: 0 0 20px rgba(255, 215, 0, 0.4); }
+    to { box-shadow: 0 0 40px rgba(255, 215, 0, 0.7); }
+}
+
+@media (max-width: 600px) {
+    .colosseum-banner {
+        width: 220px !important;
+        height: 70px !important;
+        bottom: 20px;
+        right: 20px;
+    }
+    .colosseum-icon { font-size: 1.8rem; }
+    .colosseum-title { font-size: 1.1rem; }
+}
+
+/* Ensure mobile controls are strictly tied to state */
+#mobile-controls {
+    display: none !important;
+}
+
+.mobile-mode #mobile-controls {
+    display: block !important;
+}
+
+#mobile-controls.hidden {
+    display: none !important;
+}
+
+/* Restore Neon Body if variables failed */
+body {
+    background-color: #050510 !important; /* Force dark background */
+    color: #ffffff !important;
+}
+
+#game-container {
+    background: #000 !important;
+    width: 100vw;
+    height: 100vh;
+}
+
+/* Mobile Adaptive UI */
+.mobile-mode .screen {
+    padding: 1rem;
+    justify-content: flex-start; /* Start from top on mobile */
+    align-items: center;
+    width: 100% !important;
+    height: 100% !important;
+    top: 0 !important;
+    left: 0 !important;
+    overflow-y: auto; /* Enable scrolling if content too tall */
+    -webkit-overflow-scrolling: touch;
+}
+
+.mobile-mode h1.title {
+    font-size: 2.2rem;
+    margin-top: env(safe-area-inset-top, 10px);
+}
+
+.mobile-mode h2 {
+    font-size: 1.6rem;
+    margin-bottom: 0.5rem;
+}
+
+.mobile-mode .subtitle {
+    font-size: 0.8rem;
+    opacity: 0.7;
+    margin-bottom: 1rem;
+}
+
+.mobile-mode .menu-buttons {
+    width: 80%;
+    max-width: 320px;
+}
+
+.mobile-mode .btn {
+    width: 100%;
+    padding: 0.6rem;
+    font-size: 0.9rem;
+    margin: 0.2rem 0;
+}
+
+/* Compact Upgrades for Mobile */
+.mobile-mode .upgrade-card {
+    padding: 0.6rem;
+    margin-bottom: 0.5rem;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.mobile-mode .upgrade-icon {
+    font-size: 1.2rem;
+    min-width: 30px;
+}
+
+.mobile-mode .upgrade-info h3 {
+    font-size: 0.9rem;
+    margin-bottom: 1px;
+}
+
+.mobile-mode .upgrade-info p {
+    font-size: 0.7rem;
+    line-height: 1.1;
+}
+
+.mobile-mode #upgrade-page-indicator {
+    font-size: 0.8rem;
+}
+
+/* Compact Settings for Mobile */
+.mobile-mode .settings-page {
+    padding: 0.4rem;
+    width: 90%;
+}
+
+.mobile-mode .setting-item {
+    padding: 8px;
+    margin-bottom: 4px;
+}
+
+.mobile-mode .setting-item label {
+    font-size: 0.8rem;
+}
+
+.mobile-mode .tab-btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+}
+
+.mobile-mode .settings-tabs {
+    margin-bottom: 0.8rem;
+    gap: 8px;
+}
+
+.mobile-mode .btn-arrow {
+    width: 35px;
+    height: 35px;
+}
+
+/* HUD Downscaling */
+.mobile-mode #hud {
+    font-size: 0.8rem;
+}
+
+.mobile-mode #score-display {
+    top: 5px;
+    right: 15px;
+}
+
+.mobile-mode #coin-display {
+    top: 25px;
+    right: 15px;
+}
+
+/* Touch Control Positioning Fix */
+.mobile-mode #joystick-zone {
+    bottom: calc(40px + env(safe-area-inset-bottom, 0px)) !important;
+    left: calc(30px + env(safe-area-inset-left, 0px)) !important;
+}
+
+.mobile-mode #btn-mobile-dash {
+    bottom: calc(120px + env(safe-area-inset-bottom, 0px)) !important;
+    right: calc(30px + env(safe-area-inset-right, 0px)) !important;
+}
+
+/* ==========================================================================
+   MOBILE UI POLISH & FEEDBACK
+   ========================================================================== */
+
+#mobile-controls {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1000;
+}
+
+#joystick-zone {
+    position: absolute;
+    bottom: 120px;
+    left: 50px;
+    width: 150px;
+    height: 150px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 3px solid var(--primary-color);
+    border-radius: 50%;
+    pointer-events: auto;
+    box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#joystick-knob {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 60px;
+    height: 60px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 30px var(--primary-color);
+    transition: transform 0.1s ease-out;
+}
+
+#btn-mobile-dash {
+    position: absolute;
+    bottom: 60px;
+    right: 50px;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--secondary-color), var(--danger-color));
+    border: none;
+    color: white;
+    font-weight: 900;
+    font-size: 1.2rem;
+    pointer-events: auto;
+    box-shadow: 0 0 25px var(--secondary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    transition: transform 0.1s;
+}
+
+#btn-mobile-dash:active {
+    transform: scale(0.9);
+}
+
+#btn-mobile-pause {
+    position: absolute;
+    top: calc(85px + env(safe-area-inset-top, 0px));
+    left: calc(20px + env(safe-area-inset-left, 0px));
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    z-index: 99999 !important;
+    pointer-events: auto !important;
+    background: rgba(5, 5, 16, 0.8);
+    border: 3px solid var(--primary-color);
+    color: var(--primary-color);
+    font-weight: bold;
+    font-size: 1.8rem;
+    pointer-events: auto;
+    box-shadow: 0 0 15px var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 1001;
+}
+
+/* Dash Cooldown Indicator */
+#btn-mobile-dash.cooldown {
+    filter: grayscale(0.8) opacity(0.5);
+    cursor: not-allowed;
+}
+
+/* UI Adjustments for small screens */
+@media (max-height: 500px) {
+    #joystick-zone { width: 100px; height: 100px; bottom: 20px; left: 20px; }
+    #joystick-knob { width: 40px; height: 40px; }
+    #btn-mobile-dash { width: 70px; height: 70px; bottom: 20px; right: 20px; }
+}

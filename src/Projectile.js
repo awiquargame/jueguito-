@@ -5,8 +5,8 @@ class Projectile {
         this.y = y;
         this.vx = vx;
         this.vy = vy;
-        this.width = 10;
-        this.height = 10;
+        this.width = 6;
+        this.height = 6;
         this.type = type || 'square';
         this.markedForDeletion = false;
         this.color = color || '#006400';

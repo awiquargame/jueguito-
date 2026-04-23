@@ -6,7 +6,7 @@ class Laser {
         this.angle = angle; // Radians
         this.owner = owner; // Reference to the object firing the laser
         this.width = 1000; // Long-range
-        this.height = 10; // Basic thickness
+        this.height = 6; // Thinner for new scale
 
         this.color = owner ? owner.color : '#ff8000'; // Orange default
         this.warningColor = owner ? this.game.settings.hexToRgba(owner.color, 0.3) : 'rgba(255, 128, 0, 0.3)';

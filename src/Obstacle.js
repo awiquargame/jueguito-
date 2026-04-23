@@ -2,8 +2,8 @@ class Obstacle {
     constructor(game, speedScale = 1.0) {
         this.game = game;
         this.speedScale = speedScale; // Store for valid usage
-        this.width = Math.random() * 30 + 20; // Random width 20-50
-        this.height = Math.random() * 30 + 20; // Random height 20-50
+        this.width = Math.random() * 12 + 14; 
+        this.height = Math.random() * 12 + 14;
         this.markedForDeletion = false;
 
         // RandomSpawn logic

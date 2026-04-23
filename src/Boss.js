@@ -2,8 +2,8 @@ class Boss {
     constructor(game, type = 'red') {
         this.game = game;
         this.type = type;
-        this.width = 100;
-        this.height = 100;
+        this.width = 70;
+        this.height = 70;
         this.x = this.game.width / 2 - this.width / 2;
         this.y = 50; // Hover at top
 

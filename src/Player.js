@@ -2,14 +2,14 @@
 class Player {
     constructor(game) {
         this.game = game;
-        this.width = 40;
-        this.height = 40;
+        this.width = 24;
+        this.height = 24;
         this.x = 0;
         this.y = 0;
 
         // Base Speed + Upgrade Multiplier
         // Default base is 0.5. Multiplier starts at 1.0
-        this.baseSpeed = 0.5;
+        this.baseSpeed = 0.4;
         this.speed = this.baseSpeed * (this.game.upgradeManager ? this.game.upgradeManager.getMultiplier() : 1.0);
 
         // Jelly Effect Props
@@ -311,9 +311,19 @@ class Player {
 
         // Update UI
         const dashBar = document.getElementById('dash-bar');
+        const mobileDashBtn = document.getElementById('btn-mobile-dash');
+        const dashPct = 100 - (this.dashCooldown / this.dashMaxCooldown * 100);
+
         if (dashBar) {
-            const pct = 100 - (this.dashCooldown / this.dashMaxCooldown * 100);
-            dashBar.style.width = pct + '%';
+            dashBar.style.width = dashPct + '%';
+        }
+
+        if (mobileDashBtn) {
+            if (this.dashCooldown > 0) {
+                mobileDashBtn.classList.add('cooldown');
+            } else {
+                mobileDashBtn.classList.remove('cooldown');
+            }
         }
 
         let moveX = 0;

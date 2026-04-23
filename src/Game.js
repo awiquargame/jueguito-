@@ -1,5 +1,6 @@
 class Game {
     constructor(canvas) {
+        window.game = this; // Exportación global inmediata
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
         this.width = canvas.width;
@@ -93,7 +94,7 @@ class Game {
         this.slowValUI = document.getElementById('slow-val');
 
         // Audio
-        this.bgMusic = new Audio('assets/Músicas/music.mp3');
+        this.bgMusic = new Audio('assets/Musicas/music.mp3');
         this.bgMusic.loop = true;
         this.bgMusic.volume = this.settings.get('musicVolume') / 100;
 
@@ -148,7 +149,9 @@ class Game {
         this.boxManager = new BoxManager(this);
         this.lastBoxScore = 0;
 
-        // Initial UI Update to sync states (unlocks, etc.)
+        // Force Mobile at startup
+        this.setDevice('mobile');
+        this.currentState = this.STATES.MENU;
         this.updateUI();
 
         // Start Loop
@@ -157,9 +160,6 @@ class Game {
         this.spawnRate = 2000;
         this.currentPage = 0;
         this.itemsPerPage = 6;
-        this.currentSizeIndex = 1;
-        this.sizeClasses = ['size-small', 'size-normal', 'size-large', 'size-fullscreen'];
-        this.sizeKeys = ['size.small', 'size.normal', 'size.large', 'size.fullscreen'];
 
         requestAnimationFrame(this.gameLoop.bind(this));
     }
@@ -182,7 +182,14 @@ class Game {
             this.hud.style.pointerEvents = 'none';
         }
 
-        // Bind UI buttons safely
+        // Mobile Pause Button (PointerDown es el más universal y suficiente)
+        this.bind('btn-mobile-pause', 'pointerdown', (e) => { 
+            e.preventDefault(); 
+            e.stopPropagation();
+            this.input.togglePause(); 
+        });
+        
+        // --- RESTAURANDO BINDINGS ELIMINADOS POR ERROR ---
         this.bind('btn-start', 'click', () => this.handleStartClick());
         this.bind('btn-upgrades', 'click', () => this.showScreen('menu-upgrades'));
         this.bind('btn-skins', 'click', () => this.openShop());
@@ -191,6 +198,7 @@ class Game {
         this.bind('btn-back-settings', 'click', () => this.toMenu());
         this.bind('btn-back-shop', 'click', () => this.toMenu());
         this.bind('btn-back-upgrades', 'click', () => this.toMenu());
+        // ------------------------------------------------
 
         // Competitive Buttons
         this.bind('btn-competitive', 'click', (e) => {
@@ -278,7 +286,6 @@ class Game {
         // Language Toggle
         this.bind('btn-language', 'click', () => {
             const newLang = this.localizationManager.toggleLanguage();
-            this.updateScreenSizeButton();
             this.selectSound.currentTime = 0;
             this.selectSound.play().catch(e => { });
         });
@@ -394,8 +401,43 @@ class Game {
     }
 
     setDevice(device) {
-        this.input.setControlMode(device);
-        this.showScreen('menu-start');
+        const container = document.getElementById('game-container');
+        if (container) {
+            container.classList.add('mobile-mode');
+        }
+
+        this.input.setControlMode('mobile');
+        
+        // Dynamic Full-Screen Scaling
+        this.handleResize();
+        window.addEventListener('resize', () => this.handleResize());
+        
+        if (this.obstacleManager) this.obstacleManager.resetSpawners();
+        if (this.player) this.player.reset();
+    }
+
+    handleResize() {
+        this.width = window.innerWidth;
+        this.height = window.innerHeight;
+        this.canvas.width = this.width;
+        this.canvas.height = this.height;
+        
+        // Stretch canvas to fill exact viewport
+        this.canvas.style.width = '100vw';
+        this.canvas.style.height = '100vh';
+        this.canvas.style.objectFit = 'fill';
+        this.canvas.style.position = 'fixed';
+        this.canvas.style.top = '0';
+        this.canvas.style.left = '0';
+        this.canvas.style.zIndex = '1';
+
+        // Update darkness layer
+        if (this.darknessCanvas) {
+            this.darknessCanvas.width = this.width;
+            this.darknessCanvas.height = this.height;
+        }
+
+        console.log(`Resized Game to: ${this.width}x${this.height}`);
     }
 
     showScreen(screenId) {
@@ -1090,8 +1132,15 @@ class Game {
         // Mobile Controls Visibility
         const mobileControls = document.getElementById('mobile-controls');
         if (mobileControls) {
-            mobileControls.classList.add('hidden');
-            // console.log("UpdateUI: Hiding mobile controls initially.");
+            const isMobile = this.input.controlMode === 'mobile';
+            const isPlaying = this.currentState === this.STATES.PLAYING || 
+                             this.currentState === this.STATES.COLOSSEUM;
+            
+            if (isMobile && isPlaying) {
+                mobileControls.classList.remove('hidden');
+            } else {
+                mobileControls.classList.add('hidden');
+            }
         }
 
         // Show current state screen
@@ -1126,7 +1175,11 @@ class Game {
                 // Actually skin menu updates in renderSkinsList.
             }
 
-
+        } else if (this.currentState === this.STATES.DEVICE) {
+            if (this.screens.device) {
+                this.screens.device.classList.remove('hidden');
+                this.screens.device.classList.add('active');
+            }
         } else if (this.currentState === this.STATES.PAUSED) {
             this.screens.pause.classList.remove('hidden');
             this.screens.pause.classList.add('active');
@@ -1430,14 +1483,17 @@ class Game {
                                 this.addFloatingText(this.player.x, this.player.y, "-♥", "#ff0000");
                                 this.player.activateShield(2000); // Grant temp invulnerability on hit
                             } else {
-                                // Die
-                                this.player.explode();
-                                this.triggerShake(500, 10);
-                                this.deathSound.currentTime = 0;
-                                this.deathSound.play().catch(e => { });
-                                setTimeout(() => {
-                                    this.gameOver();
-                                }, 1500);
+                                // Die (Gate this to avoid loop spam in console)
+                                if (!this.player.isDead) {
+                                    this.player.isDead = true;
+                                    this.player.explode();
+                                    this.triggerShake(500, 10);
+                                    this.deathSound.currentTime = 0;
+                                    this.deathSound.play().catch(e => { });
+                                    setTimeout(() => {
+                                        this.gameOver();
+                                    }, 1500);
+                                }
                             }
                         }
                         // If Invulnerable (Dashing but didn't kill), do nothing (Phase Through)
@@ -1709,39 +1765,6 @@ class Game {
         }
     }
 
-    toggleScreenSize() {
-        const container = document.getElementById('game-container');
-        // Remove current class
-        if (this.currentSizeIndex !== 1) { // Normal has no specific class or default
-            container.classList.remove(this.sizeClasses[this.currentSizeIndex]);
-        }
-
-        // Cycle index
-        this.currentSizeIndex = (this.currentSizeIndex + 1) % 4;
-
-        // Apply new class
-        if (this.currentSizeIndex !== 1) {
-            container.classList.add(this.sizeClasses[this.currentSizeIndex]);
-        } else {
-            // Normal size: remove others
-            container.classList.remove('size-small');
-            container.classList.remove('size-large');
-        }
-
-        // Update Button Text
-        this.updateScreenSizeButton();
-
-        // Play sound
-        this.selectSound.currentTime = 0;
-        this.selectSound.play().catch(e => { });
-    }
-
-    updateScreenSizeButton() {
-        const btn = document.getElementById('btn-screen-size');
-        const prefix = this.localizationManager.getString('settings.size');
-        const sizeText = this.localizationManager.getString(this.sizeKeys[this.currentSizeIndex]);
-        btn.innerText = prefix + sizeText;
-    }
 
     toggleSetting(key, values) {
         const current = this.settings.get(key);

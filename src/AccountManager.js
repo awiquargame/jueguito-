@@ -116,6 +116,7 @@ class AccountManager {
     }
 
     async login(username, password) {
+        this.showLoading("INICIANDO SESIÓN...");
         try {
             const response = await fetch(`${this.serverUrl}/api/login`, {
                 method: 'POST',
@@ -140,10 +141,13 @@ class AccountManager {
             }
         } catch (e) {
             this.showError("Error de conexión con el servidor.");
+        } finally {
+            this.hideLoading();
         }
     }
 
     async register(username, password) {
+        this.showLoading("CREANDO CUENTA...");
         try {
             const response = await fetch(`${this.serverUrl}/api/register`, {
                 method: 'POST',
@@ -160,6 +164,8 @@ class AccountManager {
             }
         } catch (e) {
             this.showError("Error de conexión con el servidor.");
+        } finally {
+            this.hideLoading();
         }
     }
 
@@ -171,6 +177,7 @@ class AccountManager {
 
     async saveProgress(manual = false) {
         if (!this.user) return;
+        if (manual) this.showLoading("GUARDANDO...");
 
         // Collect current game state
         const competitiveHighScore = localStorage.getItem('neon_survive_competitive_highscore') || 0;
@@ -211,6 +218,8 @@ class AccountManager {
             }
         } catch (e) {
             if (manual) this.game.addFloatingText(this.game.width / 2, this.game.height - 50, "ERROR AL GUARDAR (OFFLINE)", "#ff0000");
+        } finally {
+            if (manual) this.hideLoading();
         }
     }
 
@@ -219,7 +228,7 @@ class AccountManager {
         if (!tbody) return;
 
         // Show loading state
-        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:20px;">CARGANDO...</td></tr>';
+        this.showLoading("CARGANDO CLASIFICACIÓN...");
 
         try {
             const response = await fetch(`${this.serverUrl}/api/leaderboard`);
@@ -231,6 +240,8 @@ class AccountManager {
             }
         } catch (e) {
             tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:20px; color:#ff4d4d;">SERVIDOR NO DISPONIBLE</td></tr>';
+        } finally {
+            this.hideLoading();
         }
     }
 
@@ -350,5 +361,21 @@ class AccountManager {
     showError(msg) {
         const errEl = document.getElementById('login-error');
         if (errEl) errEl.innerText = msg;
+    }
+
+    showLoading(text = "SINCRONIZANDO...") {
+        const loader = document.getElementById('loading-overlay');
+        const loaderText = loader?.querySelector('.loader-text');
+        if (loader && loaderText) {
+            loaderText.innerText = text;
+            loader.classList.remove('hidden');
+        }
+    }
+
+    hideLoading() {
+        const loader = document.getElementById('loading-overlay');
+        if (loader) {
+            loader.classList.add('hidden');
+        }
     }
 }
